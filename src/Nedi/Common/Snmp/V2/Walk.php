@@ -3,6 +3,7 @@
 namespace Nedi\Common\Snmp\V2;
 
 
+use Nedi\Common\Shell\Command;
 use Nedi\Common\Snmp\Parameters;
 
 class Walk
@@ -25,17 +26,33 @@ class Walk
 
     public function execute()
     {
-        $time = microtime(true);
-        exec(
-            sprintf("snmpbulkwalk -Onaq -m '' %s %s %s", $this->parameters, $this->hostAddress, $this->oid),
-            $output
+        $command = new Command(
+            sprintf("%s -Onaq -m '' %s %s %s", $this->getCommand(), $this->parameters, $this->hostAddress, $this->oid)
         );
+        $command->execute();
+        $result = $this->parseResponse($command->getResonse());
+        return $result;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getCommand()
+    {
+        return "snmpwalk";
+    }
+
+    /**
+     * @param $response
+     * @return mixed
+     */
+    protected function parseResponse($response)
+    {
         $result = array();
-        foreach ($output as $row) {
+        foreach ($response as $row) {
             $spacePosition = strpos($row, " ");
             $result[substr($row, 0, $spacePosition)] = substr($row, $spacePosition + 1);
         }
-        echo microtime(true)- $time. "\n";
         return $result;
     }
 
