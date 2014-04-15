@@ -10,7 +10,7 @@ class OidTrim
      * @param $array
      * @return mixed
      */
-    protected function trim($array)
+    public function trim($array)
     {
         $result = array();
         foreach ($array as $key => $row) {
