@@ -14,6 +14,10 @@ class OidTrim
     {
         $result = array();
         foreach ($array as $key => $row) {
+            if ($row{0} == "\"") {
+                $value = substr($row, 1, strlen($row) - 2);
+                $row = $value;
+            }
             $result[$this->getKey($key)] = $row;
         }
         return $result;
